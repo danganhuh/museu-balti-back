@@ -4,6 +4,7 @@
 node_modules/
 dist/
 dist-ssr/
+server/dist/
 *.local
 .cache/
 
@@ -31,3 +32,4 @@ coverage/
 # Pentru a-l versiona din nou, șterge linia de mai jos.
 # -----------------------------------------------------------------------------
 BAZA-LABORATOR.md
+LAB7-BACKEND-PLAN.md

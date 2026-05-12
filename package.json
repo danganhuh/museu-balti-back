@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:api": "npm run dev --prefix server",
+    "dev:all": "concurrently -n web,api -c blue,magenta \"npm run dev\" \"npm run dev:api\"",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lint:api": "npm run lint --prefix server"
   },
   "dependencies": {
     "i18next": "^24.2.0",
@@ -28,6 +31,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "globals": "^15.13.0",
+    "concurrently": "^9.1.2",
     "prettier": "^3.4.2",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.17.0",
