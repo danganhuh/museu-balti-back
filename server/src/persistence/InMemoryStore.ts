@@ -1,5 +1,4 @@
-import type { Exhibit, Hall, HistoricalPerson, TimelineEvent } from '../domain/types.js'
-import type { PaginatedResponse } from '../domain/types.js'
+import type { Exhibit, Hall, HistoricalPerson, PaginatedResponse, TimelineEvent } from '../domain/types.js'
 
 function clone<T>(v: T): T {
   return structuredClone(v)

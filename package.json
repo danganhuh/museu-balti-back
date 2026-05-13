@@ -10,7 +10,8 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "lint:api": "npm run lint --prefix server"
+    "lint:api": "npm run lint --prefix server",
+    "test:api": "npm run test --prefix server"
   },
   "dependencies": {
     "i18next": "^24.2.0",
