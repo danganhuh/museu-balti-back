@@ -1,4 +1,4 @@
-import type { Exhibit, Hall, HistoricalPerson, TimelineEvent } from '../domain/types.js'
+import type { BadgeDefinition, Exhibit, Hall, HistoricalPerson, QuizSet, TimelineEvent } from '../domain/types.js'
 import { exhibitHeroUrls, hallCoverUrls, portraitUrls, timelineThumbUrls } from './mediaUrls.js'
 
 export const seedHalls: Hall[] = [
@@ -544,16 +544,290 @@ export const seedTimelineEvents: TimelineEvent[] = [
   },
 ]
 
+export const seedQuizSets: QuizSet[] = [
+  {
+    id: 'quiz-balti-urban',
+    passThreshold: 3,
+    title: { ro: 'Bălți urban: piețe și străzi', ru: 'Бельцы: рынки и улицы', en: 'Bălți urban: markets and streets' },
+    questions: [
+      {
+        id: 'q-b-1',
+        prompt: {
+          ro: 'Ce reper documentar timpuriu este frecvent citat pentru târgul de la Bălți?',
+          ru: 'Какой ранний документальный ориентир часто приводят для ярмарки в Бельцах?',
+          en: 'Which early documentary milestone is often cited for the Bălți fair?',
+        },
+        choices: [
+          { ro: '1588', ru: '1588', en: '1588' },
+          { ro: '1711', ru: '1711', en: '1711' },
+          { ro: '1812', ru: '1812', en: '1812' },
+          { ro: '1918', ru: '1918', en: '1918' },
+        ],
+        correctIndex: 0,
+        explanation: {
+          ro: 'Anul 1588 apare frecvent în cronologiile locale ca primă atestare documentară a târgului.',
+          ru: '1588 год часто упоминается в местных хрониках как первое документальное свидетельство ярмарки.',
+          en: 'Local chronicles often cite 1588 as the first documentary mention of the fair.',
+        },
+      },
+      {
+        id: 'q-b-2',
+        prompt: {
+          ro: 'Care râu traversează municipiul Bălți?',
+          ru: 'Какая река протекает через Бельцы?',
+          en: 'Which river runs through the city of Bălți?',
+        },
+        choices: [
+          { ro: 'Nistrul', ru: 'Днестр', en: 'The Dniester' },
+          { ro: 'Răut', ru: 'Реут', en: 'The Răut' },
+          { ro: 'Prutul', ru: 'Прут', en: 'The Prut' },
+          { ro: 'Dunărea', ru: 'Дунай', en: 'The Danube' },
+        ],
+        correctIndex: 1,
+        explanation: {
+          ro: 'Râul Răut traversează municipiul Bălți.',
+          ru: 'Река Реут протекает через Бельцы.',
+          en: 'The Răut river flows through Bălți.',
+        },
+      },
+      {
+        id: 'q-b-3',
+        prompt: {
+          ro: 'Ce eveniment din 1812 a inclus Basarabia în Imperiul Rus?',
+          ru: 'Какое событие 1812 года включило Бессарабию в Российскую империю?',
+          en: 'Which 1812 event placed Bessarabia under Russian rule?',
+        },
+        choices: [
+          { ro: 'Tratatul de la București', ru: 'Бухарестский мир', en: 'Treaty of Bucharest' },
+          { ro: 'Pacea de la Paris', ru: 'Парижский мир', en: 'Peace of Paris' },
+          { ro: 'Congresul de la Viena', ru: 'Венский конгресс', en: 'Congress of Vienna' },
+          { ro: 'Unirea din 1859', ru: 'Объединение 1859', en: 'Union of 1859' },
+        ],
+        correctIndex: 0,
+        explanation: {
+          ro: 'Tratatul de la București din 1812 consfințește anexarea estului Moldovei la Rusia.',
+          ru: 'Бухарестский трактат 1812 года закрепил переход Молдавии к России.',
+          en: 'The 1812 Treaty of Bucharest confirms Russia\'s annexation of eastern Moldavia.',
+        },
+      },
+      {
+        id: 'q-b-4',
+        prompt: {
+          ro: 'Unde se află Piața Independenței din Bălți?',
+          ru: 'Где находится площадь Независимости в Бельцах?',
+          en: 'Where is Independence Square located in Bălți?',
+        },
+        choices: [
+          { ro: 'În centrul istoric', ru: 'В историческом центре', en: 'In the historic centre' },
+          { ro: 'La periferia de est', ru: 'На восточной окраине', en: 'On the eastern outskirts' },
+          { ro: 'În afara orașului', ru: 'За городом', en: 'Outside the city' },
+          { ro: 'Numai pe hărți vechi', ru: 'Только на старых картах', en: 'Only on old maps' },
+        ],
+        correctIndex: 0,
+        explanation: {
+          ro: 'Piața Independenței este nodul central al Bălților.',
+          ru: 'Площадь Независимости — центральный узел Бельц.',
+          en: 'Independence Square is Bălți\'s central hub.',
+        },
+      },
+      {
+        id: 'q-b-5',
+        prompt: {
+          ro: 'Catedrala Sf. Nicolae din Bălți aparține tradiției:',
+          ru: 'Собор Св. Николая в Бельцах относится к:',
+          en: 'St. Nicholas Cathedral in Bălți belongs to the:',
+        },
+        choices: [
+          { ro: 'Ortodoxă', ru: 'Православие', en: 'Eastern Orthodox' },
+          { ro: 'Catolicism latin', ru: 'Латинский католицизм', en: 'Latin Catholic' },
+          { ro: 'Luterană', ru: 'Лютеранство', en: 'Lutheran' },
+          { ro: 'Anglicană', ru: 'Англиканство', en: 'Anglican' },
+        ],
+        correctIndex: 0,
+        explanation: {
+          ro: 'Majoritatea creștinilor din Moldova aparține Bisericii Ortodoxe.',
+          ru: 'Большинство христиан Молдовы — православные.',
+          en: 'Moldova\'s majority Christian community is Eastern Orthodox.',
+        },
+      },
+    ],
+  },
+  {
+    id: 'quiz-region',
+    passThreshold: 3,
+    title: { ro: 'Regiunea Prut–Nistru', ru: 'Регион между Прутом и Днестром', en: 'The Prut–Dniester region' },
+    questions: [
+      {
+        id: 'q-r-1',
+        prompt: {
+          ro: 'Care este capitala Republicii Moldova?',
+          ru: 'Какова столица Республики Молдова?',
+          en: 'What is the capital of the Republic of Moldova?',
+        },
+        choices: [
+          { ro: 'Chișinău', ru: 'Кишинёв', en: 'Chișinău' },
+          { ro: 'Bălți', ru: 'Бельцы', en: 'Bălți' },
+          { ro: 'Tiraspol', ru: 'Тирасполь', en: 'Tiraspol' },
+          { ro: 'Iași', ru: 'Яссы', en: 'Iași' },
+        ],
+        correctIndex: 0,
+        explanation: {
+          ro: 'Chișinău este capitala Republicii Moldova.',
+          ru: 'Кишинёв — столица Молдовы.',
+          en: 'Chișinău is the capital of Moldova.',
+        },
+      },
+      {
+        id: 'q-r-2',
+        prompt: {
+          ro: 'Limba română face parte din familia:',
+          ru: 'Румынский язык относится к семье:',
+          en: 'Romanian belongs to which language family?',
+        },
+        choices: [
+          { ro: 'Limbi romanice', ru: 'Романские языки', en: 'Romance languages' },
+          { ro: 'Limbi slave', ru: 'Славянские языки', en: 'Slavic languages' },
+          { ro: 'Limbi germanice', ru: 'Германские языки', en: 'Germanic languages' },
+          { ro: 'Limbi semitice', ru: 'Семитские языки', en: 'Semitic languages' },
+        ],
+        correctIndex: 0,
+        explanation: {
+          ro: 'Româna a evoluat din latina populară — ramura romanică.',
+          ru: 'Румынский произошёл из народной латыни — романская ветвь.',
+          en: 'Romanian evolved from Vulgar Latin — the Romance branch.',
+        },
+      },
+      {
+        id: 'q-r-3',
+        prompt: {
+          ro: 'Moneda oficială a Republicii Moldova este:',
+          ru: 'Официальная валюта Молдовы:',
+          en: 'The official currency of Moldova is:',
+        },
+        choices: [
+          { ro: 'MDL (leul moldovenesc)', ru: 'MDL (молдавский лей)', en: 'MDL (Moldovan leu)' },
+          { ro: 'RON (leul românesc)', ru: 'RON (румынский лей)', en: 'RON (Romanian leu)' },
+          { ro: 'UAH (hrivna)', ru: 'UAH (гривна)', en: 'UAH (hryvnia)' },
+          { ro: 'EUR (euro)', ru: 'EUR (евро)', en: 'EUR (euro)' },
+        ],
+        correctIndex: 0,
+        explanation: {
+          ro: 'Leul moldovenesc (MDL) este moneda emisă de Banca Națională a Moldovei.',
+          ru: 'Молдавский лей (MDL) выпускается Национальным банком Молдовы.',
+          en: 'The Moldovan leu (MDL) is issued by the National Bank of Moldova.',
+        },
+      },
+      {
+        id: 'q-r-4',
+        prompt: {
+          ro: 'Marea cea mai apropiată de sud-vestul Moldovei este:',
+          ru: 'Ближайшее море к юго-западу Молдовы:',
+          en: 'The sea closest to south-western Moldova is:',
+        },
+        choices: [
+          { ro: 'Marea Neagră', ru: 'Чёрное море', en: 'The Black Sea' },
+          { ro: 'Marea Baltică', ru: 'Балтийское море', en: 'The Baltic Sea' },
+          { ro: 'Marea Caspică', ru: 'Каспийское море', en: 'The Caspian Sea' },
+          { ro: 'Marea Mediterană', ru: 'Средиземное море', en: 'The Mediterranean Sea' },
+        ],
+        correctIndex: 0,
+        explanation: {
+          ro: 'Spre sud-vest, prin România și Ucraina, cel mai aproape este Marea Neagră.',
+          ru: 'К юго-западу через соседей ближе всего Чёрное море.',
+          en: 'Toward the south-west, the nearest sea is the Black Sea.',
+        },
+      },
+      {
+        id: 'q-r-5',
+        prompt: {
+          ro: 'Basarabia a făcut parte din România între:',
+          ru: 'Бессарабия входила в Румынию между:',
+          en: 'Bessarabia was part of Romania between:',
+        },
+        choices: [
+          { ro: '1918 și 1940', ru: '1918 и 1940', en: '1918 and 1940' },
+          { ro: '1812 și 1918', ru: '1812 и 1918', en: '1812 and 1918' },
+          { ro: '1945 și 1991', ru: '1945 и 1991', en: '1945 and 1991' },
+          { ro: '1588 și 1812', ru: '1588 и 1812', en: '1588 and 1812' },
+        ],
+        correctIndex: 0,
+        explanation: {
+          ro: 'După 1918 și până la ultimatumul din 1940.',
+          ru: 'После 1918 и до событий 1940 года.',
+          en: 'After the 1918 vote until the events of 1940.',
+        },
+      },
+    ],
+  },
+]
+
+export const seedBadges: BadgeDefinition[] = [
+  {
+    id: 'badge:time-rail',
+    icon: '🛤️',
+    title: { ro: 'Maestru al șinelului temporal', ru: 'Мастер временной ленты', en: 'Timeline rail master' },
+    description: {
+      ro: 'Ai deschis toate fișele evenimentelor din cronologia expoziției.',
+      ru: 'Вы открыли все карточки событий на временной шкале.',
+      en: 'You opened every timeline event card in the exhibit chronology.',
+    },
+  },
+  {
+    id: 'badge:chronologist',
+    icon: '🧭',
+    title: { ro: 'Cronolog', ru: 'Хронолог', en: 'Chronologist' },
+    description: {
+      ro: 'Ai ordonat corect misiunea „Anii în șir".',
+      ru: 'Вы правильно упорядочили миссию «Годы по порядку».',
+      en: 'You correctly completed the "Years in order" mission.',
+    },
+  },
+  {
+    id: 'badge:urban-quiz',
+    icon: '🏛️',
+    title: { ro: 'Explorator urban', ru: 'Городской исследователь', en: 'Urban explorer' },
+    description: {
+      ro: 'Ai obținut cel puțin 3/5 la quiz-ul despre Bălți.',
+      ru: 'Вы набрали минимум 3/5 в викторине о Бельцах.',
+      en: 'You scored at least 3/5 on the Bălți urban quiz.',
+    },
+  },
+  {
+    id: 'badge:region-quiz',
+    icon: '🌍',
+    title: { ro: 'Cartograf al regiunii', ru: 'Картограф региона', en: 'Regional cartographer' },
+    description: {
+      ro: 'Ai obținut cel puțin 3/5 la quiz-ul regional.',
+      ru: 'Вы набрали минимум 3/5 в региональной викторине.',
+      en: 'You scored at least 3/5 on the regional quiz.',
+    },
+  },
+  {
+    id: 'badge:match-master',
+    icon: '🎴',
+    title: { ro: 'Memorie de muzeu', ru: 'Музейная память', en: 'Museum memory' },
+    description: {
+      ro: 'Ai potrivit toate perechile din jocul de memorie.',
+      ru: 'Вы собрали все пары в игре на память.',
+      en: 'You matched every pair in the memory game.',
+    },
+  },
+]
+
 export function defaultMuseumSeed(): {
   halls: Hall[]
   exhibits: Exhibit[]
   people: HistoricalPerson[]
   timelineEvents: TimelineEvent[]
+  quizSets: QuizSet[]
+  badges: BadgeDefinition[]
 } {
   return {
     halls: structuredClone(seedHalls),
     exhibits: structuredClone(seedExhibits),
     people: structuredClone(seedPeople),
     timelineEvents: structuredClone(seedTimelineEvents),
+    quizSets: structuredClone(seedQuizSets),
+    badges: structuredClone(seedBadges),
   }
 }

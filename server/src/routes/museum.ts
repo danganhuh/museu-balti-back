@@ -6,10 +6,12 @@ import type { InMemoryStore } from '../persistence/InMemoryStore.js'
 import {
   parseEra,
   parseCategory,
+  parseBadgeBody,
   parseExhibitBody,
   parseHallBody,
   parseHistoricalPersonBody,
   parseNonEmptyString,
+  parseQuizSetBody,
   parseTimelineEventBody,
 } from '../validation/dto.js'
 
@@ -283,6 +285,140 @@ export function createMuseumRouter(store: InMemoryStore): Router {
       const ok = store.deleteTimelineEvent(id)
       if (!ok) {
         res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Timeline event not found' } })
+        return
+      }
+      res.status(204).send()
+    }),
+  )
+
+  // --- Quiz sets ---
+  r.get(
+    '/quiz-sets',
+    requireAuth,
+    requirePermissions('READ'),
+    asyncHandler(async (req, res) => {
+      const { limit, offset } = parsePagination(req.query as Record<string, unknown>)
+      res.status(200).json(store.listQuizSets(offset, limit))
+    }),
+  )
+
+  r.get(
+    '/quiz-sets/:id',
+    requireAuth,
+    requirePermissions('READ'),
+    asyncHandler(async (req, res) => {
+      const q = store.getQuizSet(req.params.id)
+      if (!q) {
+        res.status(404).json({ error: { code: 'NOT_FOUND', message: 'QuizSet not found' } })
+        return
+      }
+      res.status(200).json(q)
+    }),
+  )
+
+  r.post(
+    '/quiz-sets',
+    requireAuth,
+    requirePermissions('WRITE'),
+    asyncHandler(async (req, res) => {
+      const q = parseQuizSetBody(req.body)
+      store.createQuizSet(q)
+      res.status(201).location(`/api/quiz-sets/${encodeURIComponent(q.id)}`).json(q)
+    }),
+  )
+
+  r.put(
+    '/quiz-sets/:id',
+    requireAuth,
+    requirePermissions('WRITE'),
+    asyncHandler(async (req, res) => {
+      const id = parseNonEmptyString(req.params.id, 'id')
+      const q = parseQuizSetBody(req.body)
+      if (q.id !== id) {
+        res.status(400).json({ error: { code: 'BAD_REQUEST', message: 'Body id must match URL id' } })
+        return
+      }
+      store.updateQuizSet(id, q)
+      res.status(200).json(q)
+    }),
+  )
+
+  r.delete(
+    '/quiz-sets/:id',
+    requireAuth,
+    requirePermissions('DELETE'),
+    asyncHandler(async (req, res) => {
+      const id = parseNonEmptyString(req.params.id, 'id')
+      const ok = store.deleteQuizSet(id)
+      if (!ok) {
+        res.status(404).json({ error: { code: 'NOT_FOUND', message: 'QuizSet not found' } })
+        return
+      }
+      res.status(204).send()
+    }),
+  )
+
+  // --- Badge definitions ---
+  r.get(
+    '/badge-definitions',
+    requireAuth,
+    requirePermissions('READ'),
+    asyncHandler(async (req, res) => {
+      const { limit, offset } = parsePagination(req.query as Record<string, unknown>)
+      res.status(200).json(store.listBadges(offset, limit))
+    }),
+  )
+
+  r.get(
+    '/badge-definitions/:id',
+    requireAuth,
+    requirePermissions('READ'),
+    asyncHandler(async (req, res) => {
+      const b = store.getBadge(req.params.id)
+      if (!b) {
+        res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Badge not found' } })
+        return
+      }
+      res.status(200).json(b)
+    }),
+  )
+
+  r.post(
+    '/badge-definitions',
+    requireAuth,
+    requirePermissions('WRITE'),
+    asyncHandler(async (req, res) => {
+      const b = parseBadgeBody(req.body)
+      store.createBadge(b)
+      res.status(201).location(`/api/badge-definitions/${encodeURIComponent(b.id)}`).json(b)
+    }),
+  )
+
+  r.put(
+    '/badge-definitions/:id',
+    requireAuth,
+    requirePermissions('WRITE'),
+    asyncHandler(async (req, res) => {
+      const id = parseNonEmptyString(req.params.id, 'id')
+      const b = parseBadgeBody(req.body)
+      if (b.id !== id) {
+        res.status(400).json({ error: { code: 'BAD_REQUEST', message: 'Body id must match URL id' } })
+        return
+      }
+      store.updateBadge(id, b)
+      res.status(200).json(b)
+    }),
+  )
+
+  r.delete(
+    '/badge-definitions/:id',
+    requireAuth,
+    requirePermissions('DELETE'),
+    asyncHandler(async (req, res) => {
+      const id = parseNonEmptyString(req.params.id, 'id')
+      const ok = store.deleteBadge(id)
+      if (!ok) {
+        res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Badge not found' } })
         return
       }
       res.status(204).send()
