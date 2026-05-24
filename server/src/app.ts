@@ -6,11 +6,12 @@ import type { InMemoryStore } from './persistence/InMemoryStore.js'
 import { authDemoRouter } from './routes/authDemo.js'
 import { createMuseumRouter } from './routes/museum.js'
 import { tokenRouter } from './routes/token.js'
+import { setupSwagger } from './swagger/setup.js'
 
 export function createApp(store: InMemoryStore): express.Express {
   const app = express()
 
-  app.use(cors({ origin: process.env.CORS_ORIGIN?.split(',') ?? true }))
+  app.use(cors({ origin: process.env.CORS_ORIGIN?.split(',').map((s) => s.trim()) ?? true }))
   app.use(express.json())
 
   app.get('/health', (_req, res) => {
@@ -20,6 +21,8 @@ export function createApp(store: InMemoryStore): express.Express {
   app.use(tokenRouter)
   app.use(authDemoRouter)
   app.use('/api', createMuseumRouter(store))
+
+  setupSwagger(app)
 
   app.use(apiErrorHandler)
 

@@ -67,6 +67,28 @@ export type TimelineEvent = {
   relatedExhibitIds: readonly string[]
 }
 
+export type QuizQuestion = {
+  id: string
+  prompt: LocalizedString
+  choices: readonly LocalizedString[]
+  correctIndex: number
+  explanation: LocalizedString
+}
+
+export type QuizSet = {
+  id: string
+  title: LocalizedString
+  passThreshold: number
+  questions: readonly QuizQuestion[]
+}
+
+export type BadgeDefinition = {
+  id: string
+  title: LocalizedString
+  description: LocalizedString
+  icon?: string
+}
+
 export type PaginatedResponse<T> = {
   data: T[]
   total: number
