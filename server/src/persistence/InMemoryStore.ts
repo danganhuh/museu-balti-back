@@ -1,4 +1,4 @@
-import type { Exhibit, Hall, HistoricalPerson, PaginatedResponse, TimelineEvent } from '../domain/types.js'
+import type { BadgeDefinition, Exhibit, Hall, HistoricalPerson, PaginatedResponse, QuizSet, TimelineEvent } from '../domain/types.js'
 
 function clone<T>(v: T): T {
   return structuredClone(v)
@@ -15,17 +15,23 @@ export class InMemoryStore {
   private exhibits = new Map<string, Exhibit>()
   private people = new Map<string, HistoricalPerson>()
   private timeline = new Map<string, TimelineEvent>()
+  private quizSets = new Map<string, QuizSet>()
+  private badges = new Map<string, BadgeDefinition>()
 
   constructor(seed?: {
     halls?: Hall[]
     exhibits?: Exhibit[]
     people?: HistoricalPerson[]
     timelineEvents?: TimelineEvent[]
+    quizSets?: QuizSet[]
+    badges?: BadgeDefinition[]
   }) {
     if (seed?.halls) for (const h of seed.halls) this.halls.set(h.id, clone(h))
     if (seed?.exhibits) for (const e of seed.exhibits) this.exhibits.set(e.id, clone(e))
     if (seed?.people) for (const p of seed.people) this.people.set(p.id, clone(p))
     if (seed?.timelineEvents) for (const t of seed.timelineEvents) this.timeline.set(t.id, clone(t))
+    if (seed?.quizSets) for (const q of seed.quizSets) this.quizSets.set(q.id, clone(q))
+    if (seed?.badges) for (const b of seed.badges) this.badges.set(b.id, clone(b))
   }
 
   // --- Halls ---
@@ -167,5 +173,57 @@ export class InMemoryStore {
 
   deleteTimelineEvent(id: string): boolean {
     return this.timeline.delete(id)
+  }
+
+  // --- Quiz sets ---
+  listQuizSets(offset: number, limit: number): PaginatedResponse<QuizSet> {
+    const sorted = [...this.quizSets.values()].sort((a, b) => a.id.localeCompare(b.id))
+    return paginate(sorted, offset, limit)
+  }
+
+  getQuizSet(id: string): QuizSet | undefined {
+    const q = this.quizSets.get(id)
+    return q ? clone(q) : undefined
+  }
+
+  createQuizSet(q: QuizSet): void {
+    if (this.quizSets.has(q.id)) throw Object.assign(new Error('QuizSet id already exists'), { statusCode: 409 })
+    this.quizSets.set(q.id, clone(q))
+  }
+
+  updateQuizSet(id: string, q: QuizSet): void {
+    if (!this.quizSets.has(id)) throw Object.assign(new Error('QuizSet not found'), { statusCode: 404 })
+    if (q.id !== id) throw Object.assign(new Error('QuizSet id mismatch'), { statusCode: 400 })
+    this.quizSets.set(id, clone(q))
+  }
+
+  deleteQuizSet(id: string): boolean {
+    return this.quizSets.delete(id)
+  }
+
+  // --- Badge definitions ---
+  listBadges(offset: number, limit: number): PaginatedResponse<BadgeDefinition> {
+    const sorted = [...this.badges.values()].sort((a, b) => a.id.localeCompare(b.id))
+    return paginate(sorted, offset, limit)
+  }
+
+  getBadge(id: string): BadgeDefinition | undefined {
+    const b = this.badges.get(id)
+    return b ? clone(b) : undefined
+  }
+
+  createBadge(b: BadgeDefinition): void {
+    if (this.badges.has(b.id)) throw Object.assign(new Error('Badge id already exists'), { statusCode: 409 })
+    this.badges.set(b.id, clone(b))
+  }
+
+  updateBadge(id: string, b: BadgeDefinition): void {
+    if (!this.badges.has(id)) throw Object.assign(new Error('Badge not found'), { statusCode: 404 })
+    if (b.id !== id) throw Object.assign(new Error('Badge id mismatch'), { statusCode: 400 })
+    this.badges.set(id, clone(b))
+  }
+
+  deleteBadge(id: string): boolean {
+    return this.badges.delete(id)
   }
 }

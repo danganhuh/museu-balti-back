@@ -1,4 +1,5 @@
 import type {
+  BadgeDefinition,
   Exhibit,
   ExhibitCategoryKey,
   ExhibitEraKey,
@@ -6,6 +7,8 @@ import type {
   HistoricalPerson,
   LocalizedString,
   LocalizedStringList,
+  QuizQuestion,
+  QuizSet,
   TimelineEvent,
 } from '../domain/types.js'
 
@@ -163,5 +166,61 @@ export function parseTimelineEventBody(body: unknown): TimelineEvent {
     era: parseEra(b.era, 'era'),
     image: parseOptionalString(b.image, 'image'),
     relatedExhibitIds: parseStringArray(b.relatedExhibitIds ?? [], 'relatedExhibitIds'),
+  }
+}
+
+export function parseQuizQuestion(value: unknown, field: string): QuizQuestion {
+  if (!value || typeof value !== 'object') bad(`${field} must be an object`)
+  const q = value as Record<string, unknown>
+  if (!Array.isArray(q.choices)) bad(`${field}.choices must be an array`)
+  const choices = (q.choices as unknown[]).map((c, i) =>
+    parseLocalizedString(c, `${field}.choices[${i}]`),
+  )
+  if (choices.length < 2) bad(`${field}.choices must have at least 2 options`)
+  const correctIndex =
+    typeof q.correctIndex === 'number' && Number.isInteger(q.correctIndex)
+      ? q.correctIndex
+      : bad(`${field}.correctIndex must be an integer`)
+  if (correctIndex < 0 || correctIndex >= choices.length)
+    bad(`${field}.correctIndex out of bounds (0–${choices.length - 1})`)
+  return {
+    id: parseId(q.id, `${field}.id`),
+    prompt: parseLocalizedString(q.prompt, `${field}.prompt`),
+    choices,
+    correctIndex,
+    explanation: parseLocalizedString(q.explanation, `${field}.explanation`),
+  }
+}
+
+export function parseQuizSetBody(body: unknown): QuizSet {
+  if (!body || typeof body !== 'object') bad('Body must be a JSON object')
+  const b = body as Record<string, unknown>
+  if (!Array.isArray(b.questions) || b.questions.length === 0)
+    bad('questions must be a non-empty array')
+  const questions = (b.questions as unknown[]).map((q, i) => parseQuizQuestion(q, `questions[${i}]`))
+  const passThreshold =
+    typeof b.passThreshold === 'number' &&
+    Number.isInteger(b.passThreshold) &&
+    b.passThreshold >= 0
+      ? b.passThreshold
+      : bad('passThreshold must be a non-negative integer')
+  if (passThreshold > questions.length)
+    bad(`passThreshold (${passThreshold}) cannot exceed number of questions (${questions.length})`)
+  return {
+    id: parseId(b.id, 'id'),
+    title: parseLocalizedString(b.title, 'title'),
+    passThreshold,
+    questions,
+  }
+}
+
+export function parseBadgeBody(body: unknown): BadgeDefinition {
+  if (!body || typeof body !== 'object') bad('Body must be a JSON object')
+  const b = body as Record<string, unknown>
+  return {
+    id: parseId(b.id, 'id'),
+    title: parseLocalizedString(b.title, 'title'),
+    description: parseLocalizedString(b.description, 'description'),
+    icon: parseOptionalString(b.icon, 'icon'),
   }
 }
