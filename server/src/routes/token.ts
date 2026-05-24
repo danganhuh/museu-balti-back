@@ -1,6 +1,6 @@
 import type { Response } from 'express'
 import { Router } from 'express'
-import { signAccessToken } from '../auth/jwt.js'
+import { getJwtExpiresIn, signAccessToken } from '../auth/jwt.js'
 import {
   parsePermissionsBody,
   parsePermissionsQuery,
@@ -33,7 +33,7 @@ router.get('/token', (req, res) => {
     res.status(200).json({
       accessToken,
       tokenType: 'Bearer',
-      expiresIn: process.env.JWT_EXPIRES_IN?.trim() || '60s',
+      expiresIn: getJwtExpiresIn(),
       role: resolvedRole,
       permissions,
     })
@@ -64,7 +64,7 @@ router.post('/token', (req, res) => {
     res.status(200).json({
       accessToken,
       tokenType: 'Bearer',
-      expiresIn: process.env.JWT_EXPIRES_IN?.trim() || '60s',
+      expiresIn: getJwtExpiresIn(),
       role: resolvedRole,
       permissions,
     })
