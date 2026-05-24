@@ -7,10 +7,16 @@ import { badgeCatalog } from '../data/badges'
 import { loadBadgeIds, loadLeaderboard, loadQuizProgress } from '../services/storage/interactiveStorage'
 import { syncBadges } from '../services/badgeSync'
 import { LEADERBOARD_KEYS } from '../constants/leaderboards'
+import { LoginPanel } from '../components/auth/LoginPanel'
+import { AdminPanel } from '../components/admin/AdminPanel'
+import { useAuth } from '../hooks/useAuth'
 
 export function CabinetPage() {
   const { i18n, t } = useTranslation()
   const language = i18n.language as LanguageCode
+  const { claims, isExpired } = useAuth()
+  const isWriter = !isExpired && (claims?.role === 'WRITER' || claims?.role === 'ADMIN')
+  const isAdmin = !isExpired && claims?.role === 'ADMIN'
   const [owned, setOwned] = useState<string[]>(() => loadBadgeIds())
   const [boards, setBoards] = useState(() => loadLeaderboard())
   const [quizStats, setQuizStats] = useState(() => loadQuizProgress())
@@ -43,6 +49,10 @@ export function CabinetPage() {
   return (
     <section className="section--cream cabinet-page">
       <div className="container cabinet-page__inner">
+        <LoginPanel />
+
+        {isWriter && <AdminPanel isAdmin={isAdmin} />}
+
         <header className="cabinet-page__header">
           <p className="halls-page__eyebrow">{t('cabinet.eyebrow')}</p>
           <h1 className="halls-page__title">{t('cabinet.title')}</h1>
