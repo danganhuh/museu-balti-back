@@ -1,4 +1,4 @@
-import type { BadgeDefinition, Exhibit, Hall, HistoricalPerson, PaginatedResponse, QuizSet, TimelineEvent } from '../domain/types.js'
+import type { BadgeDefinition, Exhibit, Hall, HistoricalPerson, LeaderboardEntry, PaginatedResponse, QuizSet, TimelineEvent } from '../domain/types.js'
 
 function clone<T>(v: T): T {
   return structuredClone(v)
@@ -17,6 +17,7 @@ export class InMemoryStore {
   private timeline = new Map<string, TimelineEvent>()
   private quizSets = new Map<string, QuizSet>()
   private badges = new Map<string, BadgeDefinition>()
+  private leaderboards = new Map<string, LeaderboardEntry[]>()
 
   constructor(seed?: {
     halls?: Hall[]
@@ -225,5 +226,25 @@ export class InMemoryStore {
 
   deleteBadge(id: string): boolean {
     return this.badges.delete(id)
+  }
+
+  // --- Leaderboards ---
+  getLeaderboard(key: string): LeaderboardEntry[] {
+    return clone(this.leaderboards.get(key) ?? [])
+  }
+
+  addLeaderboardEntry(key: string, entry: LeaderboardEntry): void {
+    const list = this.leaderboards.get(key) ?? []
+    list.push(clone(entry))
+    list.sort((a, b) => b.score - a.score)
+    this.leaderboards.set(key, list.slice(0, 20))
+  }
+
+  clearLeaderboard(key: string): void {
+    this.leaderboards.delete(key)
+  }
+
+  clearAllLeaderboards(): void {
+    this.leaderboards.clear()
   }
 }

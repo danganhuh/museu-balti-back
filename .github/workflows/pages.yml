@@ -23,6 +23,8 @@ jobs:
           node-version: '20'
           cache: npm
       - run: npm ci
+      - name: Install server dependencies (needed for export-spec)
+        run: npm ci --prefix server
       - name: Build with Pages base path
         run: npm run build
         env:

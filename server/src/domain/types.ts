@@ -95,3 +95,9 @@ export type PaginatedResponse<T> = {
   limit: number
   offset: number
 }
+
+export type LeaderboardEntry = {
+  pseudonym: string
+  score: number
+  at: string
+}

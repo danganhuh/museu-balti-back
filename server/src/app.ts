@@ -4,6 +4,7 @@ import { warnIfInsecureJwtSecret } from './auth/jwt.js'
 import { apiErrorHandler } from './http/asyncHandler.js'
 import type { InMemoryStore } from './persistence/InMemoryStore.js'
 import { authDemoRouter } from './routes/authDemo.js'
+import { createLeaderboardRouter } from './routes/leaderboard.js'
 import { createMuseumRouter } from './routes/museum.js'
 import { tokenRouter } from './routes/token.js'
 import { setupSwagger } from './swagger/setup.js'
@@ -21,6 +22,7 @@ export function createApp(store: InMemoryStore): express.Express {
   app.use(tokenRouter)
   app.use(authDemoRouter)
   app.use('/api', createMuseumRouter(store))
+  app.use('/api', createLeaderboardRouter(store))
 
   setupSwagger(app)
 
