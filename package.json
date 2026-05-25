@@ -8,6 +8,7 @@
     "dev:api": "npm run dev --prefix server",
     "dev:all": "concurrently -n web,api -c blue,magenta \"npm run dev\" \"npm run dev:api\"",
     "build": "npm run export-spec --prefix server && tsc -b && vite build",
+    "build:render": "npm run build --prefix server && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:api": "npm run lint --prefix server",

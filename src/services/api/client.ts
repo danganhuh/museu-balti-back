@@ -1,4 +1,5 @@
-const BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'http://localhost:3001'
+const BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined)
+  ?? (import.meta.env.DEV ? 'http://localhost:3001' : '')
 
 export class ApiError extends Error {
   constructor(
