@@ -28,6 +28,10 @@ router.get('/token', (req, res) => {
       permissions: explicit,
     })
 
+    if (resolvedRole !== 'VISITOR') {
+      sendTokenError(res, 403, 'This endpoint only issues VISITOR tokens. Use /auth/admin-login or /auth/redeem for elevated access.')
+      return
+    }
     const claims = { sub: DEMO_SUB, role: resolvedRole, permissions }
     const accessToken = signAccessToken(claims)
     res.status(200).json({
@@ -59,6 +63,10 @@ router.post('/token', (req, res) => {
       permissions: explicit,
     })
 
+    if (resolvedRole !== 'VISITOR') {
+      sendTokenError(res, 403, 'This endpoint only issues VISITOR tokens. Use /auth/admin-login or /auth/redeem for elevated access.')
+      return
+    }
     const claims = { sub: DEMO_SUB, role: resolvedRole, permissions }
     const accessToken = signAccessToken(claims)
     res.status(200).json({

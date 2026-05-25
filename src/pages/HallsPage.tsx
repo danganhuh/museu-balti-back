@@ -3,20 +3,15 @@ import { useTranslation } from 'react-i18next'
 import { getOrderedHalls } from '../data/catalog'
 import { HallCard } from '../components/exhibits/HallCard'
 import type { Hall } from '../types/museum'
-import { useAuth } from '../hooks/useAuth'
 import { listHalls } from '../services/api/museumService'
 import { useApiData } from '../hooks/useApiData'
 import { ApiSourceBadge } from '../components/common/ApiSourceBadge'
 
 export function HallsPage() {
   const { t } = useTranslation()
-  const { token, isExpired } = useAuth()
-  const hasToken = !!token && !isExpired
 
-  const apiKey = hasToken ? `halls:${token}` : null
-  const { data, loading, error } = useApiData(apiKey, () =>
-    listHalls(token as string),
-  )
+  // GET /api/halls is now public — no token required
+  const { data, loading, error } = useApiData('halls', listHalls)
 
   const staticHalls = useMemo(() => getOrderedHalls() as Hall[], [])
   const apiHalls = data?.data as Hall[] | undefined

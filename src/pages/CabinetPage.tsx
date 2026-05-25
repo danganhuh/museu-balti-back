@@ -4,10 +4,9 @@ import { useTranslation } from 'react-i18next'
 import type { LanguageCode } from '../types/settings'
 import { pickLocalized } from '../i18n/pickLocalized'
 import { badgeCatalog } from '../data/badges'
-import { loadBadgeIds, loadLeaderboard, loadQuizProgress } from '../services/storage/interactiveStorage'
+import { clearAllProgress, loadBadgeIds, loadLeaderboard, loadQuizProgress } from '../services/storage/interactiveStorage'
 import { syncBadges } from '../services/badgeSync'
 import { LEADERBOARD_KEYS } from '../constants/leaderboards'
-import { LoginPanel } from '../components/auth/LoginPanel'
 import { AdminPanel } from '../components/admin/AdminPanel'
 import { useAuth } from '../hooks/useAuth'
 import { clearAllLeaderboards } from '../services/api/leaderboardService'
@@ -18,6 +17,12 @@ export function CabinetPage() {
   const { token, claims, isExpired } = useAuth()
   const isWriter = !isExpired && (claims?.role === 'WRITER' || claims?.role === 'ADMIN')
   const isAdmin = !isExpired && claims?.role === 'ADMIN'
+
+  const handleClearLocalProgress = () => {
+    if (!window.confirm('Clear all local quiz, badge, and game progress? This cannot be undone.')) return
+    clearAllProgress()
+    refresh()
+  }
 
   const handleClearAllLeaderboards = async () => {
     if (!token) return
@@ -61,8 +66,6 @@ export function CabinetPage() {
   return (
     <section className="section--cream cabinet-page">
       <div className="container cabinet-page__inner">
-        <LoginPanel />
-
         {isWriter && <AdminPanel isAdmin={isAdmin} />}
 
         <header className="cabinet-page__header">
@@ -82,6 +85,16 @@ export function CabinetPage() {
             <Link className="btn btn--ghost" to="/timeline">
               {t('cabinet.gotoTimeline')}
             </Link>
+            {isAdmin && (
+              <button
+                type="button"
+                className="btn btn--ghost"
+                style={{ fontSize: '0.8rem', color: '#dc3545', borderColor: '#dc3545' }}
+                onClick={handleClearLocalProgress}
+              >
+                Clear Local Progress
+              </button>
+            )}
           </div>
         </header>
 

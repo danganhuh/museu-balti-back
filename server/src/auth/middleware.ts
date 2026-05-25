@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import type { Permission } from './types.js'
 import { verifyAccessToken } from './jwt.js'
 
-function extractBearer(req: Request): string | null {
+export function extractBearer(req: Request): string | null {
   const h = req.headers.authorization
   if (!h || typeof h !== 'string') return null
   const [scheme, token] = h.split(/\s+/, 2)
@@ -33,6 +33,15 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
     }
     throw e
   }
+}
+
+/** Attaches `req.auth` when a valid Bearer token is present, but never blocks the request. */
+export function optionalAuth(req: Request, _res: Response, next: NextFunction): void {
+  const token = extractBearer(req)
+  if (token) {
+    try { req.auth = verifyAccessToken(token) } catch { /* ignore */ }
+  }
+  next()
 }
 
 /** Use after `requireAuth`. Returns 403 if the token is valid but lacks any of the required permissions. */

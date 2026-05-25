@@ -18,8 +18,6 @@ export function createLeaderboardRouter(store: InMemoryStore): Router {
 
   r.get(
     '/leaderboard/:key',
-    requireAuth,
-    requirePermissions('READ'),
     asyncHandler(async (req, res) => {
       res.status(200).json(store.getLeaderboard(req.params.key))
     }),

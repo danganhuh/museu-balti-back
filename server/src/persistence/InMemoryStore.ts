@@ -1,4 +1,4 @@
-import type { BadgeDefinition, Exhibit, Hall, HistoricalPerson, LeaderboardEntry, PaginatedResponse, QuizSet, TimelineEvent } from '../domain/types.js'
+import type { BadgeDefinition, Exhibit, Hall, HistoricalPerson, InviteRecord, LeaderboardEntry, PaginatedResponse, QuizSet, TimelineEvent } from '../domain/types.js'
 
 function clone<T>(v: T): T {
   return structuredClone(v)
@@ -18,6 +18,7 @@ export class InMemoryStore {
   private quizSets = new Map<string, QuizSet>()
   private badges = new Map<string, BadgeDefinition>()
   private leaderboards = new Map<string, LeaderboardEntry[]>()
+  private invites = new Map<string, InviteRecord>()
 
   constructor(seed?: {
     halls?: Hall[]
@@ -246,5 +247,28 @@ export class InMemoryStore {
 
   clearAllLeaderboards(): void {
     this.leaderboards.clear()
+  }
+
+  // --- Invites ---
+  createInvite(invite: InviteRecord): void {
+    this.invites.set(invite.code, { ...invite })
+  }
+
+  listInvites(): InviteRecord[] {
+    return [...this.invites.values()]
+      .filter((i) => !i.usedAt)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+  }
+
+  redeemInvite(code: string): InviteRecord | null {
+    const invite = this.invites.get(code)
+    if (!invite || invite.usedAt) return null
+    if (new Date(invite.expiresAt) < new Date()) return null
+    this.invites.set(code, { ...invite, usedAt: new Date().toISOString() })
+    return invite
+  }
+
+  revokeInvite(code: string): boolean {
+    return this.invites.delete(code)
   }
 }

@@ -1,8 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { STORAGE_KEYS } from '../services/storage/keys'
-import { fetchToken } from '../services/api/tokenService'
-import type { Role, Permission, TokenClaims } from '../services/api/types'
+import { adminLogin as apiAdminLogin, redeemInvite as apiRedeemInvite } from '../services/api/authService'
+import type { Permission, TokenClaims } from '../services/api/types'
 
 function decodeJwt(token: string): TokenClaims | null {
   try {
@@ -25,7 +25,8 @@ type AuthContextValue = {
   claims: TokenClaims | null
   isExpired: boolean
   hasPermission: (p: Permission) => boolean
-  login: (role: Role) => Promise<void>
+  adminLogin: (secret: string) => Promise<void>
+  redeemInvite: (code: string) => Promise<void>
   logout: () => void
 }
 
@@ -46,8 +47,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch { /* quota or private mode */ }
   }, [token])
 
-  const login = useCallback(async (role: Role) => {
-    const res = await fetchToken(role)
+  const adminLogin = useCallback(async (secret: string) => {
+    const res = await apiAdminLogin(secret)
+    setToken(res.accessToken)
+  }, [])
+
+  const redeemInvite = useCallback(async (code: string) => {
+    const res = await apiRedeemInvite(code)
     setToken(res.accessToken)
   }, [])
 
@@ -59,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 
   return (
-    <AuthContext.Provider value={{ token, claims, isExpired, hasPermission, login, logout }}>
+    <AuthContext.Provider value={{ token, claims, isExpired, hasPermission, adminLogin, redeemInvite, logout }}>
       {children}
     </AuthContext.Provider>
   )

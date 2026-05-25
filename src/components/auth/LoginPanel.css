@@ -1,9 +1,6 @@
-.login-panel {
-  margin-bottom: 2rem;
-}
-
 .login-panel__form,
-.login-panel__active {
+.login-panel__active,
+.login-panel__guest {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -55,15 +52,19 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .login-panel__label {
   font-size: 0.9rem;
   font-weight: 600;
-  min-width: 3rem;
+  min-width: 3.5rem;
+  flex-shrink: 0;
 }
 
-.login-panel__select {
+.login-panel__input {
+  flex: 1;
+  min-width: 0;
   padding: 0.4rem 0.6rem;
   border-radius: 0.375rem;
   border: 1px solid var(--color-border, #ccc);

@@ -101,3 +101,11 @@ export type LeaderboardEntry = {
   score: number
   at: string
 }
+
+export type InviteRecord = {
+  code: string
+  role: 'ADMIN' | 'WRITER'
+  createdAt: string
+  expiresAt: string
+  usedAt?: string
+}

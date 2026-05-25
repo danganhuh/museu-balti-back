@@ -193,3 +193,19 @@ export function saveHiddenRelicProgress(p: HiddenRelicProgress): void {
     lastPlayedAt: p.lastPlayedAt,
   })
 }
+
+export function clearAllProgress(): void {
+  const keys = [
+    STORAGE_KEYS.seenEvents,
+    STORAGE_KEYS.timelineSolved,
+    STORAGE_KEYS.quizProgress,
+    STORAGE_KEYS.badges,
+    STORAGE_KEYS.leaderboard,
+    STORAGE_KEYS.gameChronology,
+    STORAGE_KEYS.gameMatch,
+    STORAGE_KEYS.gameHiddenRelic,
+  ]
+  for (const key of keys) {
+    localStorage.removeItem(key)
+  }
+}

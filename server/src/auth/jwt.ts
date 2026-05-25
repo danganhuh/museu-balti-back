@@ -11,7 +11,7 @@ function getSecret(): string {
 }
 
 export function getJwtExpiresIn(): string {
-  return process.env.JWT_EXPIRES_IN?.trim() || '60s'
+  return process.env.JWT_EXPIRES_IN?.trim() || '2m'
 }
 
 export function warnIfInsecureJwtSecret(): void {
