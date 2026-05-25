@@ -16,6 +16,7 @@ export const STORAGE_KEYS = {
   gameChronology: `${STORAGE_PREFIX}game:chronology:main`,
   gameMatch: `${STORAGE_PREFIX}game:match:main`,
   gameHiddenRelic: `${STORAGE_PREFIX}game:hiddenRelic:main`,
+  token: `${STORAGE_PREFIX}token`,
 } as const
 
 /** Bump when persisted shape changes; handled in migrateStorage(). */

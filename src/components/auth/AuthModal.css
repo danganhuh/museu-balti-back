@@ -1,0 +1,163 @@
+/* ── Overlay ───────────────────────────────────────────── */
+.auth-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  backdrop-filter: blur(2px);
+}
+
+/* ── Dialog box ─────────────────────────────────────────── */
+.auth-modal-content {
+  position: relative;
+  /* Mirror card-surface light values */
+  background: #fff;
+  border: 1px solid var(--border-card, rgba(31, 26, 21, 0.12));
+  border-radius: var(--radius-card, 0.75rem);
+  padding: 2rem;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+  color: var(--color-ink, #1f1a15);
+}
+
+html[data-theme='dark'] .auth-modal-content {
+  background: #1c1916;
+  border-color: rgba(244, 239, 232, 0.12);
+  color: var(--color-ink, #f4efe8);
+  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.55);
+}
+
+/* Strip the second card-surface layer from LoginPanel inside modal */
+.auth-modal-content .login-panel {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+/* ── Section title ──────────────────────────────────────── */
+.auth-modal-content .cabinet-section__title {
+  color: var(--color-ink, #1f1a15);
+}
+
+html[data-theme='dark'] .auth-modal-content .cabinet-section__title {
+  color: var(--color-ink, #f4efe8);
+}
+
+/* ── Muted text (desc, perms, timer) ─────────────────────── */
+.auth-modal-content .login-panel__desc,
+.auth-modal-content .login-panel__perms,
+.auth-modal-content .login-panel__timer {
+  color: rgba(31, 26, 21, 0.55);
+}
+
+html[data-theme='dark'] .auth-modal-content .login-panel__desc,
+html[data-theme='dark'] .auth-modal-content .login-panel__perms,
+html[data-theme='dark'] .auth-modal-content .login-panel__timer {
+  color: rgba(244, 239, 232, 0.5);
+}
+
+.auth-modal-content .login-panel__timer--expired {
+  color: #dc3545;
+}
+
+/* ── Text input ─────────────────────────────────────────── */
+.auth-modal-content .login-panel__input {
+  background: #f5f3ef;
+  border-color: rgba(31, 26, 21, 0.22);
+  color: var(--color-ink, #1f1a15);
+}
+
+.auth-modal-content .login-panel__input::placeholder {
+  color: rgba(31, 26, 21, 0.35);
+}
+
+html[data-theme='dark'] .auth-modal-content .login-panel__input {
+  background: #141210;
+  border-color: rgba(244, 239, 232, 0.18);
+  color: var(--color-ink, #f4efe8);
+}
+
+html[data-theme='dark'] .auth-modal-content .login-panel__input::placeholder {
+  color: rgba(244, 239, 232, 0.3);
+}
+
+/* ── Buttons ────────────────────────────────────────────── */
+/*
+ * The vendor .btn uses color:#fff and .btn--ghost uses border:rgba(255,255,255,.55)
+ * — designed for dark hero sections. Override for the modal's light/dark surface.
+ */
+.auth-modal-content .btn {
+  color: var(--color-ink, #1f1a15);
+}
+
+.auth-modal-content .btn--ghost {
+  border-color: rgba(31, 26, 21, 0.3);
+}
+
+.auth-modal-content .btn--ghost:hover {
+  background: rgba(31, 26, 21, 0.07);
+  border-color: rgba(31, 26, 21, 0.5);
+  transform: none;
+}
+
+/* Keep primary button's own colors intact */
+.auth-modal-content .btn--primary,
+.auth-modal-content .btn--primary:hover {
+  color: #fff;
+}
+
+/* Dark mode buttons */
+html[data-theme='dark'] .auth-modal-content .btn {
+  color: rgba(244, 239, 232, 0.88);
+}
+
+html[data-theme='dark'] .auth-modal-content .btn--ghost {
+  border-color: rgba(244, 239, 232, 0.28);
+}
+
+html[data-theme='dark'] .auth-modal-content .btn--ghost:hover {
+  background: rgba(244, 239, 232, 0.07);
+  border-color: rgba(244, 239, 232, 0.48);
+}
+
+html[data-theme='dark'] .auth-modal-content .btn--primary,
+html[data-theme='dark'] .auth-modal-content .btn--primary:hover {
+  color: #fff;
+}
+
+/* ── Close button ───────────────────────────────────────── */
+.auth-modal__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: rgba(31, 26, 21, 0.45);
+  padding: 0.3rem 0.55rem;
+  line-height: 1;
+  border-radius: 0.375rem;
+  transition: background 0.12s, color 0.12s;
+}
+
+.auth-modal__close:hover {
+  background: rgba(31, 26, 21, 0.07);
+  color: var(--color-ink, #1f1a15);
+}
+
+html[data-theme='dark'] .auth-modal__close {
+  color: rgba(244, 239, 232, 0.4);
+}
+
+html[data-theme='dark'] .auth-modal__close:hover {
+  background: rgba(244, 239, 232, 0.08);
+  color: rgba(244, 239, 232, 0.88);
+}

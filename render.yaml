@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: museu-balti-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_EXPIRES_IN
+        value: 2m
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_SECRET
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false

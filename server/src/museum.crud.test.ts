@@ -34,15 +34,15 @@ describe('museum CRUD and permission matrix', () => {
     app = createApp(store)
   })
 
-  it('returns 401 without Authorization for GET /api/halls', async () => {
+  it('returns 200 for GET /api/halls without any Authorization (public route)', async () => {
     const res = await request(app).get('/api/halls')
-    expect(res.status).toBe(401)
+    expect(res.status).toBe(200)
   })
 
-  it('returns 403 when token lacks READ (empty permissions)', async () => {
+  it('returns 200 for GET /api/halls even with a token that has no permissions', async () => {
     const claims: AccessTokenClaims = { sub: 'x', role: 'VISITOR', permissions: [] }
     const res = await request(app).get('/api/halls').set(authHeader(claims))
-    expect(res.status).toBe(403)
+    expect(res.status).toBe(200)
   })
 
   it('returns 200 paginated list with READ token', async () => {

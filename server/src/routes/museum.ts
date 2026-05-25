@@ -21,8 +21,6 @@ export function createMuseumRouter(store: InMemoryStore): Router {
   // --- Halls ---
   r.get(
     '/halls',
-    requireAuth,
-    requirePermissions('READ'),
     asyncHandler(async (req, res) => {
       const { limit, offset } = parsePagination(req.query as Record<string, unknown>)
       res.status(200).json(store.listHalls(offset, limit))
@@ -31,8 +29,6 @@ export function createMuseumRouter(store: InMemoryStore): Router {
 
   r.get(
     '/halls/:id',
-    requireAuth,
-    requirePermissions('READ'),
     asyncHandler(async (req, res) => {
       const hall = store.getHall(req.params.id)
       if (!hall) {
@@ -88,8 +84,6 @@ export function createMuseumRouter(store: InMemoryStore): Router {
   // --- Exhibits ---
   r.get(
     '/exhibits',
-    requireAuth,
-    requirePermissions('READ'),
     asyncHandler(async (req, res) => {
       const { limit, offset } = parsePagination(req.query as Record<string, unknown>)
       const q = req.query as Record<string, string | undefined>
@@ -103,8 +97,6 @@ export function createMuseumRouter(store: InMemoryStore): Router {
 
   r.get(
     '/exhibits/:id',
-    requireAuth,
-    requirePermissions('READ'),
     asyncHandler(async (req, res) => {
       const ex = store.getExhibit(req.params.id)
       if (!ex) {
@@ -160,8 +152,6 @@ export function createMuseumRouter(store: InMemoryStore): Router {
   // --- Historical people ---
   r.get(
     '/historical-people',
-    requireAuth,
-    requirePermissions('READ'),
     asyncHandler(async (req, res) => {
       const { limit, offset } = parsePagination(req.query as Record<string, unknown>)
       res.status(200).json(store.listPeople(offset, limit))
@@ -170,8 +160,6 @@ export function createMuseumRouter(store: InMemoryStore): Router {
 
   r.get(
     '/historical-people/:id',
-    requireAuth,
-    requirePermissions('READ'),
     asyncHandler(async (req, res) => {
       const p = store.getPerson(req.params.id)
       if (!p) {
@@ -227,8 +215,6 @@ export function createMuseumRouter(store: InMemoryStore): Router {
   // --- Timeline events ---
   r.get(
     '/timeline-events',
-    requireAuth,
-    requirePermissions('READ'),
     asyncHandler(async (req, res) => {
       const { limit, offset } = parsePagination(req.query as Record<string, unknown>)
       res.status(200).json(store.listTimelineEvents(offset, limit))
@@ -237,8 +223,6 @@ export function createMuseumRouter(store: InMemoryStore): Router {
 
   r.get(
     '/timeline-events/:id',
-    requireAuth,
-    requirePermissions('READ'),
     asyncHandler(async (req, res) => {
       const t = store.getTimelineEvent(req.params.id)
       if (!t) {
@@ -294,8 +278,6 @@ export function createMuseumRouter(store: InMemoryStore): Router {
   // --- Quiz sets ---
   r.get(
     '/quiz-sets',
-    requireAuth,
-    requirePermissions('READ'),
     asyncHandler(async (req, res) => {
       const { limit, offset } = parsePagination(req.query as Record<string, unknown>)
       res.status(200).json(store.listQuizSets(offset, limit))
@@ -304,8 +286,6 @@ export function createMuseumRouter(store: InMemoryStore): Router {
 
   r.get(
     '/quiz-sets/:id',
-    requireAuth,
-    requirePermissions('READ'),
     asyncHandler(async (req, res) => {
       const q = store.getQuizSet(req.params.id)
       if (!q) {
@@ -361,8 +341,6 @@ export function createMuseumRouter(store: InMemoryStore): Router {
   // --- Badge definitions ---
   r.get(
     '/badge-definitions',
-    requireAuth,
-    requirePermissions('READ'),
     asyncHandler(async (req, res) => {
       const { limit, offset } = parsePagination(req.query as Record<string, unknown>)
       res.status(200).json(store.listBadges(offset, limit))
@@ -371,8 +349,6 @@ export function createMuseumRouter(store: InMemoryStore): Router {
 
   r.get(
     '/badge-definitions/:id',
-    requireAuth,
-    requirePermissions('READ'),
     asyncHandler(async (req, res) => {
       const b = store.getBadge(req.params.id)
       if (!b) {

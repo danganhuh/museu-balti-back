@@ -1,4 +1,4 @@
-import type { BadgeDefinition, Exhibit, Hall, HistoricalPerson, PaginatedResponse, QuizSet, TimelineEvent } from '../domain/types.js'
+import type { BadgeDefinition, Exhibit, Hall, HistoricalPerson, InviteRecord, LeaderboardEntry, PaginatedResponse, QuizSet, TimelineEvent } from '../domain/types.js'
 
 function clone<T>(v: T): T {
   return structuredClone(v)
@@ -17,6 +17,8 @@ export class InMemoryStore {
   private timeline = new Map<string, TimelineEvent>()
   private quizSets = new Map<string, QuizSet>()
   private badges = new Map<string, BadgeDefinition>()
+  private leaderboards = new Map<string, LeaderboardEntry[]>()
+  private invites = new Map<string, InviteRecord>()
 
   constructor(seed?: {
     halls?: Hall[]
@@ -225,5 +227,48 @@ export class InMemoryStore {
 
   deleteBadge(id: string): boolean {
     return this.badges.delete(id)
+  }
+
+  // --- Leaderboards ---
+  getLeaderboard(key: string): LeaderboardEntry[] {
+    return clone(this.leaderboards.get(key) ?? [])
+  }
+
+  addLeaderboardEntry(key: string, entry: LeaderboardEntry): void {
+    const list = this.leaderboards.get(key) ?? []
+    list.push(clone(entry))
+    list.sort((a, b) => b.score - a.score)
+    this.leaderboards.set(key, list.slice(0, 20))
+  }
+
+  clearLeaderboard(key: string): void {
+    this.leaderboards.delete(key)
+  }
+
+  clearAllLeaderboards(): void {
+    this.leaderboards.clear()
+  }
+
+  // --- Invites ---
+  createInvite(invite: InviteRecord): void {
+    this.invites.set(invite.code, { ...invite })
+  }
+
+  listInvites(): InviteRecord[] {
+    return [...this.invites.values()]
+      .filter((i) => !i.usedAt)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+  }
+
+  redeemInvite(code: string): InviteRecord | null {
+    const invite = this.invites.get(code)
+    if (!invite || invite.usedAt) return null
+    if (new Date(invite.expiresAt) < new Date()) return null
+    this.invites.set(code, { ...invite, usedAt: new Date().toISOString() })
+    return invite
+  }
+
+  revokeInvite(code: string): boolean {
+    return this.invites.delete(code)
   }
 }

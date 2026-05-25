@@ -4,13 +4,36 @@ import { useTranslation } from 'react-i18next'
 import type { LanguageCode } from '../types/settings'
 import { pickLocalized } from '../i18n/pickLocalized'
 import { badgeCatalog } from '../data/badges'
-import { loadBadgeIds, loadLeaderboard, loadQuizProgress } from '../services/storage/interactiveStorage'
+import { clearAllProgress, loadBadgeIds, loadLeaderboard, loadQuizProgress } from '../services/storage/interactiveStorage'
 import { syncBadges } from '../services/badgeSync'
 import { LEADERBOARD_KEYS } from '../constants/leaderboards'
+import { AdminPanel } from '../components/admin/AdminPanel'
+import { useAuth } from '../hooks/useAuth'
+import { clearAllLeaderboards } from '../services/api/leaderboardService'
 
 export function CabinetPage() {
   const { i18n, t } = useTranslation()
   const language = i18n.language as LanguageCode
+  const { token, claims, isExpired } = useAuth()
+  const isWriter = !isExpired && (claims?.role === 'WRITER' || claims?.role === 'ADMIN')
+  const isAdmin = !isExpired && claims?.role === 'ADMIN'
+
+  const handleClearLocalProgress = () => {
+    if (!window.confirm('Clear all local quiz, badge, and game progress? This cannot be undone.')) return
+    clearAllProgress()
+    refresh()
+  }
+
+  const handleClearAllLeaderboards = async () => {
+    if (!token) return
+    if (!window.confirm('Clear ALL leaderboards? This cannot be undone.')) return
+    try {
+      await clearAllLeaderboards(token)
+      refresh()
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Failed to clear leaderboards')
+    }
+  }
   const [owned, setOwned] = useState<string[]>(() => loadBadgeIds())
   const [boards, setBoards] = useState(() => loadLeaderboard())
   const [quizStats, setQuizStats] = useState(() => loadQuizProgress())
@@ -43,6 +66,8 @@ export function CabinetPage() {
   return (
     <section className="section--cream cabinet-page">
       <div className="container cabinet-page__inner">
+        {isWriter && <AdminPanel isAdmin={isAdmin} />}
+
         <header className="cabinet-page__header">
           <p className="halls-page__eyebrow">{t('cabinet.eyebrow')}</p>
           <h1 className="halls-page__title">{t('cabinet.title')}</h1>
@@ -60,6 +85,16 @@ export function CabinetPage() {
             <Link className="btn btn--ghost" to="/timeline">
               {t('cabinet.gotoTimeline')}
             </Link>
+            {isAdmin && (
+              <button
+                type="button"
+                className="btn btn--ghost"
+                style={{ fontSize: '0.8rem', color: '#dc3545', borderColor: '#dc3545' }}
+                onClick={handleClearLocalProgress}
+              >
+                Clear Local Progress
+              </button>
+            )}
           </div>
         </header>
 
@@ -95,9 +130,21 @@ export function CabinetPage() {
         </section>
 
         <section className="cabinet-lb" aria-labelledby="cabinet-lb-title">
-          <h2 id="cabinet-lb-title" className="cabinet-section__title">
-            {t('leaderboard.title')}
-          </h2>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', flexWrap: 'wrap' }}>
+            <h2 id="cabinet-lb-title" className="cabinet-section__title" style={{ margin: 0 }}>
+              {t('leaderboard.title')}
+            </h2>
+            {isAdmin && (
+              <button
+                type="button"
+                className="btn btn--ghost"
+                style={{ fontSize: '0.8rem' }}
+                onClick={() => void handleClearAllLeaderboards()}
+              >
+                Clear All
+              </button>
+            )}
+          </div>
           <p className="cabinet-lb__note">{t('leaderboard.note')}</p>
           <div className="leaderboard-grid">
             {lbBlocks.map((block) => (
