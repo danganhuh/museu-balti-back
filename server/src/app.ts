@@ -16,6 +16,8 @@ export function createApp(store: InMemoryStore): express.Express {
   app.use(cors({ origin: process.env.CORS_ORIGIN?.split(',').map((s) => s.trim()) ?? true }))
   app.use(express.json())
 
+  app.get('/', (_req, res) => { res.redirect('/api-docs') })
+
   app.get('/health', (_req, res) => {
     res.status(200).json({ ok: true, service: 'lab6-api' })
   })
