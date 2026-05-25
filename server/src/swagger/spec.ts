@@ -152,11 +152,17 @@ export const spec = {
     title: 'Vitrina Timpului — Museum API',
     version: '1.0.0',
     description:
-      'CRUD REST API for the Bălți museum exhibition. All `/api/*` routes require a Bearer JWT obtained from `POST /token`.',
+      'CRUD REST API for the Bălți museum exhibition.\n\n' +
+      '**Auth flow:**\n' +
+      '- **Admin:** `POST /auth/admin-login` with `{"secret":"<ADMIN_SECRET>"}` → ADMIN JWT\n' +
+      '- **Invited user:** `POST /auth/redeem` with `{"code":"INV-..."}` → WRITER/ADMIN JWT\n' +
+      '- **Demo/visitor:** `POST /token` → VISITOR JWT (READ only)\n\n' +
+      'Paste the returned `accessToken` into the **Authorize** button (top-right) to authenticate requests.',
   },
   servers: [{ url: 'http://localhost:3001', description: 'Development server' }],
   tags: [
-    { name: 'Auth', description: 'Token issuance' },
+    { name: 'Auth', description: 'Visitor token issuance (demo/read-only)' },
+    { name: 'Admin Auth', description: 'Admin login and invite-code management' },
     { name: 'Halls', description: 'Museum halls' },
     { name: 'Exhibits', description: 'Museum exhibits' },
     { name: 'Historical People', description: 'Historical persons' },
@@ -309,12 +315,22 @@ export const spec = {
         properties: {
           accessToken: { type: 'string' },
           tokenType: { type: 'string', example: 'Bearer' },
-          expiresIn: { type: 'string', example: '60s' },
+          expiresIn: { type: 'string', example: '2m' },
           role: { type: 'string', enum: ['ADMIN', 'WRITER', 'VISITOR'] },
           permissions: {
             type: 'array',
             items: { type: 'string', enum: ['READ', 'WRITE', 'DELETE'] },
           },
+        },
+      },
+
+      InviteResponse: {
+        type: 'object',
+        required: ['code', 'role', 'expiresAt'],
+        properties: {
+          code: { type: 'string', example: 'INV-A1B2C3D4' },
+          role: { type: 'string', enum: ['WRITER', 'ADMIN'] },
+          expiresAt: { type: 'string', format: 'date-time' },
         },
       },
     },
@@ -324,7 +340,7 @@ export const spec = {
       get: {
         tags: ['Auth'],
         summary: 'Issue JWT via query params',
-        description: 'Public endpoint. Returns a signed JWT valid for `JWT_EXPIRES_IN` (default 60 s).',
+        description: 'Public endpoint. Returns a signed JWT valid for `JWT_EXPIRES_IN` (default 2 m). Issues VISITOR tokens only.',
         parameters: [
           { name: 'role', in: 'query', schema: { type: 'string', enum: ['ADMIN', 'WRITER', 'VISITOR'], default: 'VISITOR' } },
           { name: 'permissions', in: 'query', description: 'Comma-separated extra permissions, e.g. `READ,WRITE`', schema: { type: 'string' } },
@@ -355,6 +371,111 @@ export const spec = {
         responses: {
           200: { description: 'Token issued', content: { 'application/json': { schema: { $ref: '#/components/schemas/TokenResponse' } } } },
           400: responses400,
+        },
+      },
+    },
+
+    '/auth/admin-login': {
+      post: {
+        tags: ['Admin Auth'],
+        summary: 'Log in as admin',
+        description: 'Exchange the `ADMIN_SECRET` environment variable for an **ADMIN** JWT with READ + WRITE + DELETE permissions.',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['secret'],
+                properties: { secret: { type: 'string', example: 'changeme' } },
+              },
+              example: { secret: 'changeme' },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'ADMIN token issued', content: { 'application/json': { schema: { $ref: '#/components/schemas/TokenResponse' } } } },
+          401: { description: 'Invalid secret', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } },
+        },
+      },
+    },
+
+    '/auth/redeem': {
+      post: {
+        tags: ['Admin Auth'],
+        summary: 'Redeem an invite code',
+        description: 'Exchange a one-time invite code (created via `POST /api/admin/invites`) for a WRITER or ADMIN JWT.',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['code'],
+                properties: { code: { type: 'string', example: 'INV-A1B2C3D4' } },
+              },
+              example: { code: 'INV-A1B2C3D4' },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'Token issued for the role assigned to the invite', content: { 'application/json': { schema: { $ref: '#/components/schemas/TokenResponse' } } } },
+          400: { description: 'Code missing, invalid, expired, or already used', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } },
+        },
+      },
+    },
+
+    '/api/admin/invites': {
+      get: {
+        tags: ['Admin Auth'],
+        summary: 'List active invite codes',
+        description: 'Returns all unused, non-expired invite codes. Requires ADMIN token (DELETE permission).',
+        security: authRequired,
+        responses: {
+          200: { description: 'Array of active invites', content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/InviteResponse' } } } } },
+          401: responses401,
+          403: responses403,
+        },
+      },
+      post: {
+        tags: ['Admin Auth'],
+        summary: 'Create an invite code',
+        description: 'Generates a one-time code that can be redeemed for a WRITER or ADMIN JWT. Expires in 24 h. Requires ADMIN token.',
+        security: authRequired,
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['role'],
+                properties: { role: { type: 'string', enum: ['WRITER', 'ADMIN'] } },
+              },
+              example: { role: 'WRITER' },
+            },
+          },
+        },
+        responses: {
+          201: { description: 'Invite created', content: { 'application/json': { schema: { $ref: '#/components/schemas/InviteResponse' } } } },
+          400: responses400,
+          401: responses401,
+          403: responses403,
+        },
+      },
+    },
+
+    '/api/admin/invites/{code}': {
+      delete: {
+        tags: ['Admin Auth'],
+        summary: 'Revoke an invite code',
+        description: 'Permanently removes an unused invite so it can no longer be redeemed. Requires ADMIN token.',
+        security: authRequired,
+        parameters: [{ name: 'code', in: 'path', required: true, description: 'Invite code (e.g. INV-A1B2C3D4)', schema: { type: 'string' } }],
+        responses: {
+          204: { description: 'Revoked' },
+          401: responses401,
+          403: responses403,
+          404: responses404,
         },
       },
     },
